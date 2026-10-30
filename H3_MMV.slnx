@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="H3_MMV.csproj" />
+  <Project Path="AppHost/AppHost.csproj" />
+  <Project Path="ServiceDefaults/ServiceDefaults.csproj" />
+  <Project Path="Backend/Backend.csproj" />
+  <Project Path="Frontend/Frontend.csproj" />
 </Solution>
