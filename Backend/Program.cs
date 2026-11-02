@@ -1,4 +1,6 @@
 using Backend.Hubs;
+using Backend.Services;
+using MSpace.Backend.Services;
 namespace Backend
 {
     public class Program
@@ -13,6 +15,10 @@ namespace Backend
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddSignalR();
+
+            builder.Services.AddSingleton<GameStateService>();
+            builder.Services.AddHostedService<MqttInputService>();
+
             var app = builder.Build();
 
 
