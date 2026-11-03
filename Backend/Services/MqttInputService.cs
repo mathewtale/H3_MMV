@@ -53,7 +53,7 @@ public sealed class MqttInputService : BackgroundService
 
         var options = new MqttClientOptionsBuilder()
             .WithClientId("mspace-backend")
-            .WithTcpServer("localhost", 1883)
+            .WithTcpServer("192.168.1.183", 1883)
             .WithCleanSession()
             .Build();
 
