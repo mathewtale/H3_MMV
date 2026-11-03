@@ -1,0 +1,59 @@
+services:
+    backend:
+        container_name: H3_MMV_Backend
+        build:
+            context: ./Backend
+        ports:
+            - "5169:8080"
+        environment:
+            ASPNETCORE_URLS: http://+:8080
+            ConnectionStrings__Redis: redis:6379
+            Mqtt__Host: mosquitto
+            Mqtt__Port: 1883
+        depends_on:
+            redis:
+                condition: service_healthy
+            mosquitto:
+                condition: service_started
+        restart: unless-stopped
+
+    frontend:
+        container_name: H3_MMV_Frontend
+        image: nginx:alpine
+        ports:
+            - "5170:80"
+        volumes:
+            - ./Frontend:/usr/share/nginx/html:ro
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+        depends_on:
+            - backend
+        restart: unless-stopped
+
+    redis:
+        container_name: H3_MMV_Redis
+        image: redis:7-alpine
+        command: redis-server --appendonly yes
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+        restart: unless-stopped
+
+    mosquitto:
+        container_name: H3_MMV_Mosquitto
+        image: eclipse-mosquitto:2
+        ports:
+            - "1883:1883"
+        volumes:
+            - ./Mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+            - mosquitto_data:/mosquitto/data
+        restart: unless-stopped
+
+volumes:
+    redis_data:
+        name: H3_MMV_Redis_data
+    mosquitto_data:
+        name: H3_MMV_Mosquitto_data
