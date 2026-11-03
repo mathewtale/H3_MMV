@@ -9,7 +9,7 @@ namespace Backend.Models
      
         public PlayerDto(SortedSetEntry entry)
         {
-            Name = entry.Element.ToString();
+            Name = entry.Element.ToString().Split(':').Last();
             Score = (long)entry.Score;
         }
     }

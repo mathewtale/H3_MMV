@@ -9,9 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
 
-builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepository>();
+builder.Services.AddScoped<IHighScoresRepository, HighScoresRepository>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -22,7 +22,7 @@ builder.Services.AddHostedService<MqttInputService>();
 
 var app = builder.Build();
 
-app.MapHub<GameHub>("/gameHub");
+app.MapHub<GameHub>("/game-hub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
