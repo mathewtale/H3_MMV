@@ -1,0 +1,108 @@
+﻿@import "tailwindcss";
+
+@source "../index.html";
+@source "../js";
+
+@theme {
+	--color-space: #0a0014;
+	--color-panel: #12002a;
+	--color-void: #2a1a4a;
+	--color-dim: #7a6aa8;
+	--color-light: #f4f4ff;
+	--color-neon-pink: #ff2fd6;
+	--color-neon-cyan: #00f0ff;
+	--color-neon-yellow: #ffe600;
+	--color-neon-green: #39ff14;
+	--color-neon-red: #ff2a2a;
+	--color-neon-orange: #ff8a00;
+	--color-cabinet: #2a0a4a;
+
+	--breakpoint-wide: 1150px;
+
+	--font-pixel: "Press Start 2P", monospace;
+
+	--text-tiny: 8px;
+	--text-label: 9px;
+	--text-caption: 10px;
+	--text-body: 11px;
+
+	--tracking-label: 1px;
+	--tracking-heading: 2px;
+	--tracking-subtitle: 3px;
+	--tracking-logo: 6px;
+	--tracking-name: 8px;
+
+	--text-shadow-title: 4px 4px 0 #ff2fd6;
+	--text-shadow-game-over: 4px 4px 0 #600;
+	--text-shadow-logo-yellow: 4px 4px 0 #ff2fd6, 8px 8px 0 #5a0090, 0 0 24px rgba(255, 230, 0, 0.6);
+	--text-shadow-logo-cyan: 4px 4px 0 #ff2fd6, 8px 8px 0 #5a0090, 0 0 24px rgba(0, 240, 255, 0.6);
+
+	--shadow-button: 4px 4px 0 #ff2fd6;
+	--shadow-cabinet: 0 0 0 4px #000, 0 0 40px rgba(255, 47, 214, 0.45), inset 0 0 20px rgba(0, 0, 0, 0.8);
+	--shadow-pixel-frame: 0 -4px 0 0 #00f0ff, 0 4px 0 0 #00f0ff, -4px 0 0 0 #00f0ff, 4px 0 0 0 #00f0ff, 0 0 0 8px #12002a, 0 -12px 0 0 #ff2fd6, 0 12px 0 0 #ff2fd6, -12px 0 0 0 #ff2fd6, 12px 0 0 0 #ff2fd6;
+	--shadow-glow-red: 0 0 8px #ff2a2a;
+	--shadow-glow-green: 0 0 8px #39ff14;
+
+	--animate-blink: blink 1s steps(1) infinite;
+	--animate-blink-short: blink 0.6s steps(1) 6;
+	--animate-flicker: flicker 0.12s infinite;
+	--animate-shake: shake 0.3s steps(4);
+
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes flicker {
+		50% {
+			opacity: 0.92;
+		}
+	}
+
+	@keyframes shake {
+		0%,
+		100% {
+			transform: translate(0);
+		}
+		25% {
+			transform: translate(-8px, 4px);
+		}
+		50% {
+			transform: translate(8px, -4px);
+		}
+		75% {
+			transform: translate(-4px, 4px);
+		}
+	}
+}
+
+@utility bg-grid-lines {
+	background-image: linear-gradient(rgba(255, 47, 214, 0.07) 2px, transparent 2px), linear-gradient(90deg, rgba(255, 47, 214, 0.07) 2px, transparent 2px);
+	background-size: 40px 40px;
+}
+
+@utility bg-scanlines {
+	background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.18) 0 2px, transparent 2px 4px);
+}
+
+@utility bg-crt {
+	background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.28) 0 2px, transparent 2px 4px), radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.65) 100%);
+}
+
+@utility pixelated {
+	image-rendering: pixelated;
+}
+
+@utility max-h-panel {
+	max-height: calc(100% - 24px);
+}
+
+/* The cabinet fills the width, but never gets taller than the space it is in (36px is the border and padding) */
+@utility w-cabinet {
+	width: min(100cqw, calc((100cqh - 36px) * 600 / 880 + 36px));
+}
+
+@utility container-size {
+	container-type: size;
+}
