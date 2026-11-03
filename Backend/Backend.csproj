@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
     <PackageReference Include="MQTTnet" Version="4.3.7.1207" />
+    <PackageReference Include="StackExchange.Redis" Version="3.4.31" />
   </ItemGroup>
 
 </Project>
