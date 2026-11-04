@@ -11,8 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
     ConnectionMultiplexer.Connect(
         builder.Configuration.GetConnectionString("Redis")));
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
 
-builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepository>();
+builder.Services.AddScoped<IHighScoresRepository, HighScoresRepository>();
 
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
@@ -28,7 +29,7 @@ builder.Services.AddHostedService(
 
 var app = builder.Build();
 
-app.MapHub<GameHub>("/gameHub");
+app.MapHub<GameHub>("/game-hub");
 
 if (app.Environment.IsDevelopment())
 {

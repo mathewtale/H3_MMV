@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="da">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>M-SPACE</title>
+
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" />
+
+		<link rel="stylesheet" href="css/output.css" />
+
+		<script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8/dist/browser/signalr.min.js" defer></script>
+		<script src="js/config.js" defer></script>
+		<script src="js/constants.js" defer></script>
+		<script src="js/shared.js" defer></script>
+		<script src="js/sprites.js" defer></script>
+		<script src="js/highscores.js" defer></script>
+		<script src="js/connection.js" defer></script>
+		<script src="js/game.js" defer></script>
+		<script src="js/renderer.js" defer></script>
+		<script src="js/hud.js" defer></script>
+		<script src="js/main.js" defer></script>
+
+		<!-- Temporary keyboard controls -->
+		<script src="js/keyboard.js" defer></script>
+	</head>
+
+	<body class="flex h-dvh flex-col overflow-hidden bg-space bg-grid-lines font-pixel text-light">
+		<div class="pointer-events-none fixed inset-0 z-50 bg-scanlines"></div>
+
+		<header class="shrink-0 px-4 pb-1 pt-3 text-center">
+			<div class="inline-block px-6 py-2 text-2xl tracking-logo text-neon-yellow text-shadow-logo-yellow wide:text-4xl">M-<span class="text-neon-cyan text-shadow-logo-cyan">SPACE</span></div>
+
+			<div class="mt-2 text-caption tracking-subtitle text-dim">★ UENDELIG RUMFLUGT ★</div>
+
+			<div class="mt-2 inline-flex items-center gap-2.5 text-label text-dim">
+				<div id="connection-dot" class="h-2.5 w-2.5 bg-neon-red shadow-glow-red"></div>
+
+				<span id="connection-text">SERVER OFFLINE</span>
+			</div>
+		</header>
+
+		<main class="flex min-h-0 flex-1 justify-center gap-8 px-4 pb-4 pt-2">
+			<!-- Pilot status -->
+			<section class="m-3 hidden max-h-panel w-70 shrink-0 self-center overflow-y-auto bg-panel px-4.5 py-5 shadow-pixel-frame wide:block">
+				<h2 class="mb-4.5 text-center text-xs tracking-heading text-neon-pink">- PILOT -</h2>
+
+				<div class="flex flex-col gap-2 py-2.5">
+					<span class="text-label tracking-label text-neon-cyan">POINT</span>
+					<span id="hud-score" class="text-lg">000000</span>
+				</div>
+
+				<div class="flex flex-col gap-2 py-2.5">
+					<span class="text-label tracking-label text-neon-cyan">REKORD</span>
+					<span id="hud-best" class="text-lg text-neon-yellow">000000</span>
+				</div>
+
+				<div class="flex flex-col gap-2 py-2.5">
+					<span class="text-label tracking-label text-neon-cyan">SKJOLDE</span>
+					<div id="hud-shields" class="flex gap-1.5"></div>
+				</div>
+
+				<div class="flex flex-col gap-2 py-2.5">
+					<span class="text-label tracking-label text-neon-cyan">FART <span id="hud-speed">1.0X</span></span>
+					<div id="hud-speed-bar" class="flex gap-0.75"></div>
+				</div>
+
+				<div class="flex flex-col gap-2 pt-2.5">
+					<span class="text-label tracking-label text-neon-cyan">AFSTAND</span>
+					<span id="hud-distance" class="text-lg">0.0KM</span>
+				</div>
+			</section>
+
+			<!-- Game screen -->
+			<section class="flex h-full w-full max-w-130 min-w-0 flex-col gap-3">
+				<div class="flex min-h-0 flex-1 items-center justify-center container-size">
+					<div class="w-cabinet border-4 border-neon-pink bg-linear-to-b from-cabinet to-panel p-3.5 shadow-cabinet">
+						<div id="screen" class="relative aspect-600/880 w-full overflow-hidden border-4 border-black bg-black">
+							<canvas id="game-canvas" width="600" height="880" class="block h-full w-full pixelated"></canvas>
+
+							<!-- Start screen -->
+							<div id="start-screen" class="absolute inset-0 z-2 flex flex-col items-center justify-center gap-5.5 bg-black/70 p-6 text-center">
+								<h1 class="text-3xl leading-tight text-neon-yellow text-shadow-title">M-SPACE</h1>
+
+								<ul class="flex flex-col gap-2.5 text-left text-label">
+									<li class="flex items-center gap-3.5"><img src="assets/asteroid.png" alt="" class="h-7 w-7 object-contain" />ASTEROIDE -1 SKJOLD</li>
+									<li class="flex items-center gap-3.5"><img src="assets/satellite.png" alt="" class="h-7 w-7 object-contain" />SATELLIT -1 SKJOLD</li>
+									<li class="flex items-center gap-3.5"><img src="assets/energy-cell.png" alt="" class="h-7 w-7 object-contain" />ENERGICELLE +1 SKJOLD</li>
+									<li class="flex items-center gap-3.5"><img src="assets/rocket.png" alt="" class="h-7 w-7 object-contain" />RAKET BOOST GENNEM ALT</li>
+								</ul>
+
+								<p class="flex items-center gap-3 text-label text-neon-cyan">
+									<span><span class="mr-1 inline-block border-3 border-light px-1.75 py-1 text-light" data-control="left">00</span> VENSTRE</span>
+									<span><span class="mr-1 inline-block border-3 border-light px-1.75 py-1 text-light" data-control="start">02</span> START</span>
+									<span><span class="mr-1 inline-block border-3 border-light px-1.75 py-1 text-light" data-control="right">04</span> HØJRE</span>
+								</p>
+
+								<p class="animate-blink text-sm text-neon-yellow">TRYK START</p>
+							</div>
+
+							<!-- Game over screen -->
+							<div id="game-over-screen" hidden class="absolute inset-0 z-2 flex flex-col items-center justify-center gap-5.5 bg-black/70 p-6 text-center">
+								<h1 class="text-3xl leading-tight text-neon-red text-shadow-game-over">SPIL<br />SLUT</h1>
+
+								<div id="final-score" class="text-3xl">000000</div>
+
+								<div id="new-record" hidden class="animate-blink text-body text-neon-green">★ NY REKORD ★</div>
+
+								<form id="save-form" class="flex flex-col items-center gap-3 text-label text-neon-cyan">
+									<label for="player-name">SKRIV DIT NAVN (4 BOGSTAVER)</label>
+
+									<div class="flex gap-2.5">
+										<input
+											id="player-name"
+											maxlength="4"
+											placeholder="AAAA"
+											autocomplete="off"
+											class="w-37.5 border-4 border-neon-cyan bg-black px-3.5 py-3 text-center text-xl uppercase tracking-name text-neon-yellow outline-hidden focus:border-neon-yellow"
+										/>
+
+										<button type="submit" class="border-4 border-neon-cyan bg-black px-3.5 py-3 text-body text-light shadow-button hover:bg-neon-cyan hover:text-black active:translate-x-1 active:translate-y-1 active:shadow-none">
+											GEM
+										</button>
+									</div>
+								</form>
+
+								<p class="animate-blink text-body leading-loose text-neon-yellow">TRYK START FOR AT PRØVE IGEN</p>
+							</div>
+
+							<div class="pointer-events-none absolute inset-0 z-10 animate-flicker bg-crt"></div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- High scores -->
+			<section class="m-3 hidden max-h-panel w-70 shrink-0 self-center overflow-y-auto bg-panel px-4.5 py-5 shadow-pixel-frame wide:block">
+				<h2 class="mb-4.5 text-center text-xs tracking-heading text-neon-pink">- HIGH SCORES -</h2>
+				<div id="highscores"></div>
+			</section>
+		</main>
+	</body>
+</html>
