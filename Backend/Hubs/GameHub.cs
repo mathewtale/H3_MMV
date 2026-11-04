@@ -24,14 +24,33 @@ public class GameHub : Hub
         {
             "GAME_START",
             "GAME_OVER",
+            "OBSTACLE_HIT",
+            "ENERGY_CELL_HIT",
+            "BORDER_HIT",
             "BOOST_ACTIVATED",
             "BOOST_DEACTIVATED"
         };
 
-        if (!allowedEvents.Contains(gameEvent.Event))
+        if (gameEvent == null ||
+            !allowedEvents.Contains(gameEvent.Event))
         {
             throw new HubException(
                 "This event is not allowed as an Arduino command.");
+        }
+
+        // OBSTACLE_HIT and ENERGY_CELL_HIT require shield data.
+        if (gameEvent.Event == "OBSTACLE_HIT" ||
+            gameEvent.Event == "ENERGY_CELL_HIT")
+        {
+            if (gameEvent.Data is not System.Text.Json.JsonElement data ||
+                !data.TryGetProperty("shields", out var shields) ||
+                shields.ValueKind != System.Text.Json.JsonValueKind.Number ||
+                !shields.TryGetInt32(out var shieldCount) ||
+                shieldCount < 0)
+            {
+                throw new HubException(
+                    "This event requires a valid shields value.");
+            }
         }
 
         var deviceId = _deviceRegistry.LastSeenDeviceId;
@@ -51,7 +70,8 @@ public class GameHub : Hub
             Data = gameEvent.Data
         };
 
-        await _mqttCommandService.SendCommandAsync(deviceId, command);
+        await _mqttCommandService.SendCommandAsync(
+            deviceId, command);
     }
 
     public async Task SendTestMessage(string message)
