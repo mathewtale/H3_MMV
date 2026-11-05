@@ -11,7 +11,7 @@
  *   00 = move left     02 = start game     04 = move right
  *   Touching several pads at once is ignored (neighbouring pads often light up together).
  *
- * ---- Board -> broker --------------------------------------------------------------
+ * ---- Board -> broker -------------------------------------------------------------- mspace/A88C7B842178/event
  * Topic mspace/<deviceId>/input   (one message per touch)
  *   MOVE_LEFT    pad 00 touched: the ship should move one lane to the left
  *   MOVE_RIGHT   pad 04 touched: the ship should move one lane to the right
@@ -24,6 +24,7 @@
  *
  * ---- Frontend/backend -> board ----------------------------------------------------
  * Topic mspace/<deviceId>/event   (the board reacts to each message)
+ * Topic mspace/all/event          (same events, delivered to every board)
  *   GAME_START         a game has started. Shields are set to START_SHIELDS (config.h);
  *                      green LEDs, short beep, screen "GO!".
  *   GAME_OVER          the game has ended. Long red LEDs, low beep, screen "GAME OVER".
@@ -338,7 +339,8 @@ bool ensureMqtt() {
   }
   Serial.println("connected");
   mqtt.onMessage(onMqttMessage);
-  mqtt.subscribe(topicEvents.c_str());
+  mqtt.subscribe(topicEvents.c_str());                          // this board only: mspace/<id>/event
+  mqtt.subscribe((String(TOPIC_BASE) + "/all/" + TOPIC_EVENTS_IN).c_str());  // every board:     mspace/all/event
   publishStatus("{\"online\":true}");
   showStatus("Ready", deviceId.c_str());
   return true;
