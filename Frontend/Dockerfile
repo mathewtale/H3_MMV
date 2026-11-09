@@ -1,3 +1,4 @@
+
 FROM alpine:3 AS css
 
 ARG TAILWIND_VERSION=4.3.3
@@ -5,10 +6,9 @@ ARG TARGETARCH
 
 WORKDIR /src
 
-RUN apk add --no-cache curl libstdc++ libgcc \
-	&& ARCH=$([ "$TARGETARCH" = "arm64" ] && echo arm64 || echo x64) \
-	&& curl -sSLo /usr/local/bin/tailwindcss "https://github.com/tailwindlabs/tailwindcss/releases/download/v${TAILWIND_VERSION}/tailwindcss-linux-${ARCH}-musl" \
-	&& chmod +x /usr/local/bin/tailwindcss
+RUN apk add --no-cache curl libstdc++ libgcc
+
+RUN set -eu; case "$TARGETARCH" in amd64) ARCH=x64 ;; arm64) ARCH=arm64 ;; *) echo "Unsupported architecture: $TARGETARCH"; exit 1 ;; esac; curl --fail --silent --show-error --location --retry 3 --output /usr/local/bin/tailwindcss "https://github.com/tailwindlabs/tailwindcss/releases/download/v${TAILWIND_VERSION}/tailwindcss-linux-${ARCH}-musl"; chmod +x /usr/local/bin/tailwindcss; tailwindcss --help > /dev/null
 
 COPY . .
 
