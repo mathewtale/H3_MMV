@@ -30,6 +30,7 @@
  *   GAME_OVER          the game has ended. Long red LEDs, low beep, screen "GAME OVER".
  *   OBSTACLE_HIT       the ship hit an obstacle (asteroid/satellite) and lost a shield.
  *                      Needs "data":{"shields":N} = shields left. Red LEDs, low beep.
+ *   OBSTACLE_SMASHED   the boosted ship smashed through an obstacle. Short orange LEDs and a short beep.
  *   ENERGY_CELL_HIT    the ship picked up an energy cell and gained a shield.
  *                      Needs "data":{"shields":N} = shields now. Green LEDs, high beep.
  *   BORDER_HIT         the ship tried to leave the three lanes (hit the border).
@@ -287,6 +288,10 @@ void onMqttMessage(int size) {
     screenState = "ENERGY";
     flashLeds(0, 255, 0, 250);
     beep(1200, 80);
+  } else if (!strcmp(event, "OBSTACLE_SMASHED")) {
+    flashLeds(255, 140, 0, 150);
+    beep(600, 60);
+    return;                                  // nothing changes on the screen
   } else if (!strcmp(event, "BORDER_HIT")) {
     screenState = "BORDER";
     flashLeds(255, 140, 0, 150);

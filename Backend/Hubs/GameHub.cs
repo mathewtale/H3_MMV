@@ -1,4 +1,4 @@
-﻿
+
 using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.SignalR;
@@ -53,6 +53,7 @@ public class GameHub : Hub
             "GAME_START",
             "GAME_OVER",
             "OBSTACLE_HIT",
+            "OBSTACLE_SMASHED",
             "ENERGY_CELL_HIT",
             "BORDER_HIT",
             "BOOST_ACTIVATED",
