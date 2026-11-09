@@ -14,6 +14,12 @@ async function init() {
 
 			sendFeedback("gameStart");
 		},
+		gamePaused() {
+			Hud.showConnectionLost();
+		},
+		gameResumed() {
+			Hud.hideOverlays();
+		},
 		energyCellHit(cell) {
 			Renderer.burst(cell.x, cell.y, ["#39ff14", "#f4f4ff"], 18);
 			Renderer.popup(cell.x, cell.y, "+50", "#39ff14");
@@ -64,14 +70,19 @@ async function init() {
 	// #region Backend
 
 	const backendCommands = {
-		READY: () => startIfIdle(),
+		START_GAME: () => startIfIdle(),
 		MOVE_LEFT: () => Game.moveShip(-1),
 		MOVE_RIGHT: () => Game.moveShip(1),
+		CONNECTION_LOST: () => Game.pause(),
 	};
 
 	Connection.init({
 		onInput: (command) => backendCommands[command]?.(),
-		onStatus: (status) => Hud.setConnectionStatus(status),
+		onStatus: (status) => {
+			Hud.setConnectionStatus(status);
+
+			if (status === "lost") Game.pause();
+		},
 	});
 
 	// #endregion
@@ -84,6 +95,8 @@ async function init() {
 
 	function startIfIdle() {
 		if (Game.state === "play") return;
+
+		if (Game.state === "paused") return Game.resume();
 
 		Game.start();
 	}

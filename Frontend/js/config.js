@@ -36,7 +36,7 @@ const Config = {
 	signalR: {
 		hubUrl: "/game-hub",
 		receiveMethod: "ReceiveArduinoEvent",
-		sendMethod: "SendFrontendEvent",
+		sendMethod: "SendArduinoCommand",
 		retryDelay: 5000,
 	},
 };

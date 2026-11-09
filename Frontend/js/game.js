@@ -14,6 +14,8 @@ class Game {
 	}
 
 	static get speed() {
+		if (this.state === "paused") return 0;
+
 		if (this.state !== "play") return Config.baseSpeed * 0.5;
 
 		return Config.baseSpeed * this.speedMultiplier * (this.boosting ? Config.boost.speedFactor : 1);
@@ -40,6 +42,22 @@ class Game {
 		this.state = "play";
 
 		this.emit("gameStart");
+	}
+
+	static pause() {
+		if (this.state !== "play") return;
+
+		this.state = "paused";
+
+		this.emit("gamePaused");
+	}
+
+	static resume() {
+		if (this.state !== "paused") return;
+
+		this.state = "play";
+
+		this.emit("gameResumed");
 	}
 
 	static moveShip(direction) {

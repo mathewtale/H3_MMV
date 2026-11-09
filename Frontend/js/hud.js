@@ -10,6 +10,7 @@ class Hud {
 			screen: document.getElementById("screen"),
 			startScreen: document.getElementById("start-screen"),
 			gameOverScreen: document.getElementById("game-over-screen"),
+			connectionLostScreen: document.getElementById("connection-lost-screen"),
 			finalScore: document.getElementById("final-score"),
 			newRecord: document.getElementById("new-record"),
 			saveForm: document.getElementById("save-form"),
@@ -92,6 +93,11 @@ class Hud {
 	static hideOverlays() {
 		this.elements.startScreen.hidden = true;
 		this.elements.gameOverScreen.hidden = true;
+		this.elements.connectionLostScreen.hidden = true;
+	}
+
+	static showConnectionLost() {
+		this.elements.connectionLostScreen.hidden = false;
 	}
 
 	static showGameOver(score, isNewRecord) {

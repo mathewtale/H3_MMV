@@ -37,6 +37,9 @@
  *   BOOST_ACTIVATED    the boost has started. LEDs stay blue and the screen shows
  *                      "BOOST" until BOOST_DEACTIVATED arrives.
  *   BOOST_DEACTIVATED  the boost has ended. LEDs go back to off.
+ *   CONNECTION_LOST    the backend lost the frontend (the game is paused). Red LEDs, low beep,
+ *                      screen "NO SIGNAL". Touching the start pad resumes the game.
+ *   The board also shows "NO SIGNAL" by itself if its Wi-Fi or MQTT connection drops.
  *     e.g. {"event":"OBSTACLE_HIT","data":{"shields":2},"timestamp":"2026-11-02T10:07:00Z"}
  *   Unknown events and malformed JSON are ignored.
  */
@@ -83,7 +86,7 @@ uint32_t ntpQuery(const char *host) {
       const uint32_t secs = ((uint32_t)pkt[40] << 24) | ((uint32_t)pkt[41] << 16) | ((uint32_t)pkt[42] << 8) | pkt[43];
       return secs > 2208988800UL ? secs - 2208988800UL : 0;   // NTP epoch 1900 -> Unix epoch 1970
     }
-    delay(10);
+    mqtt.poll();                      // keep MQTT alive while waiting
   }
   ntpUdp.stop();
   return 0;
@@ -150,7 +153,10 @@ void onPadsPressed(uint8_t pressed) {
   // several pads at once is almost always a ghost touch from a neighbouring pad: ignore it
   if (used == left) publishEvent("MOVE_LEFT");
   else if (used == right) publishEvent("MOVE_RIGHT");
-  else if (used == start) publishEvent(EVENT_START);
+  else if (used == start) {
+    publishEvent(EVENT_START);
+    clearConnectionLost();
+  }
 }
 
 void readPads() {
@@ -195,6 +201,21 @@ void updateLeds() {
   if (ledOffAt && (int32_t)(millis() - ledOffAt) >= 0) {
     ledOffAt = 0;
     restoreLeds();
+  }
+}
+
+// carrier.Buzzer.beep() blocks with delay(), which starves MQTT and gets the board disconnected
+uint32_t buzzerOffAt = 0;
+
+void beep(int freq, uint16_t ms) {
+  carrier.Buzzer.sound(freq);
+  buzzerOffAt = millis() + ms;
+}
+
+void updateBuzzer() {
+  if (buzzerOffAt && (int32_t)(millis() - buzzerOffAt) >= 0) {
+    buzzerOffAt = 0;
+    carrier.Buzzer.noSound();
   }
 }
 
@@ -250,45 +271,64 @@ void onMqttMessage(int size) {
     shields = START_SHIELDS;
     screenState = "GO!";
     flashLeds(0, 255, 0, 400);
-    carrier.Buzzer.beep(800, 100);
+    beep(800, 100);
   } else if (!strcmp(event, "GAME_OVER")) {
     boostOn = false;
     screenState = "GAME OVER";
     flashLeds(255, 0, 0, 1500);
-    carrier.Buzzer.beep(300, 300);
+    beep(300, 300);
   } else if (!strcmp(event, "OBSTACLE_HIT")) {
     if (shieldsIn >= 0) shields = shieldsIn;
     screenState = "HIT!";
     flashLeds(255, 0, 0, 300);
-    carrier.Buzzer.beep(200, 200);
+    beep(200, 200);
   } else if (!strcmp(event, "ENERGY_CELL_HIT")) {
     if (shieldsIn >= 0) shields = shieldsIn;
     screenState = "ENERGY";
     flashLeds(0, 255, 0, 250);
-    carrier.Buzzer.beep(1200, 80);
+    beep(1200, 80);
   } else if (!strcmp(event, "BORDER_HIT")) {
     screenState = "BORDER";
     flashLeds(255, 140, 0, 150);
-    carrier.Buzzer.beep(400, 60);
+    beep(400, 60);
   } else if (!strcmp(event, "BOOST_ACTIVATED")) {
     boostOn = true;
     screenState = "FLYING";
     setLeds(0, 80, 255);
-    carrier.Buzzer.beep(1000, 100);
+    beep(1000, 100);
   } else if (!strcmp(event, "BOOST_DEACTIVATED")) {
     boostOn = false;
     screenState = "FLYING";
     restoreLeds();
-    carrier.Buzzer.beep(500, 80);
+    beep(500, 80);
+  } else if (!strcmp(event, "CONNECTION_LOST")) {
+    showConnectionLost();
+    return;
   } else {
     return;                                  // unknown event: nothing to show
   }
   drawScreen();
 }
 
+void showConnectionLost() {
+  boostOn = false;
+  screenState = "NO SIGNAL";
+  flashLeds(255, 0, 0, 1000);
+  beep(250, 300);
+  drawScreen();
+}
+
+// the frontend resumes a paused game when start is touched
+void clearConnectionLost() {
+  if (strcmp(screenState, "NO SIGNAL")) return;
+  screenState = "FLYING";
+  drawScreen();
+}
+
 /* ---------- network ---------- */
 
 uint32_t lastWifiAttempt = 0, lastMqttAttempt = 0;
+bool wasConnected = false;
 
 bool ensureWifi() {
   if (WiFi.status() == WL_CONNECTED) return true;
@@ -325,6 +365,8 @@ bool ensureMqtt() {
   lastMqttAttempt = millis();
 
   mqtt.setId(("mspace-" + deviceId).c_str());
+  static_assert(MQTT_KEEP_ALIVE_MS >= 2000, "MQTT_KEEP_ALIVE_MS below 2000 makes the board drop on every Wi-Fi hiccup");
+  mqtt.setKeepAliveInterval(MQTT_KEEP_ALIVE_MS);   // the broker sends the Last Will after 1.5x this
   if (MQTT_USER[0]) mqtt.setUsernamePassword(MQTT_USER, MQTT_PASS);
   // Last Will: the broker publishes this if the board disappears
   mqtt.beginWill(topicStatus.c_str(), true, 1);
@@ -343,6 +385,7 @@ bool ensureMqtt() {
   mqtt.subscribe((String(TOPIC_BASE) + "/all/" + TOPIC_EVENTS_IN).c_str());  // every board:     mspace/all/event
   publishStatus("{\"online\":true}");
   showStatus("Ready", deviceId.c_str());
+  wasConnected = true;
   return true;
 }
 
@@ -365,9 +408,19 @@ void setup() {
   lastWifiAttempt = millis() - 10000;
 }
 
+// the board lost Wi-Fi or MQTT after it was connected
+void checkConnectionLost() {
+  if (!wasConnected || (WiFi.status() == WL_CONNECTED && mqtt.connected())) return;
+  wasConnected = false;
+  Serial.println("Connection lost");
+  showConnectionLost();
+}
+
 void loop() {
   readPads();
   updateLeds();
+  updateBuzzer();
+  checkConnectionLost();
   if (!ensureWifi()) return;
   syncTime();
   if (!deviceId.length()) {

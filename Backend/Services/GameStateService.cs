@@ -1,5 +1,7 @@
 ﻿using Backend.Hubs;
+using Backend.Models;
 using Microsoft.AspNetCore.SignalR;
+using System.Text.Json;
 
 
 namespace Backend.Services;
@@ -7,10 +9,6 @@ namespace Backend.Services;
 public sealed class GameStateService
 {
     private readonly IHubContext<GameHub> _hub;
-    private readonly object _lock = new();
-
-    private int _lane = 1;
-    private int _score = 0;
 
     public GameStateService(IHubContext<GameHub> hub)
     {
@@ -19,35 +17,15 @@ public sealed class GameStateService
 
     public async Task HandleInputAsync(string input)
     {
-        int lane;
-        int score;
+        await _hub.Clients.All.SendAsync("ReceiveArduinoEvent", JsonSerializer.Deserialize<GameEvent>(input));
+    }
 
-        lock (_lock)
+    public async Task SendConnectionLostAsync()
+    {
+        await _hub.Clients.All.SendAsync("ReceiveArduinoEvent", new GameEvent
         {
-            switch (input.Trim().ToLowerInvariant())
-            {
-                case "left":
-                    _lane = Math.Max(0, _lane - 1);
-                    break;
-
-                case "right":
-                    _lane = Math.Min(2, _lane + 1);
-                    break;
-
-                default:
-                    return;
-            }
-
-            lane = _lane;
-            score = _score;
-        }
-
-        await _hub.Clients.All.SendAsync(
-            "GameStateUpdated",
-            new
-            {
-                lane,
-                score
-            });
+            Event = "CONNECTION_LOST",
+            Timestamp = DateTimeOffset.UtcNow
+        });
     }
 }
