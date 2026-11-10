@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="da">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,7 +31,7 @@
 		<header class="shrink-0 px-4 pb-1 pt-3 text-center">
 			<div class="inline-block px-6 py-2 text-2xl tracking-logo text-neon-yellow text-shadow-logo-yellow wide:text-4xl">M-<span class="text-neon-cyan text-shadow-logo-cyan">SPACE</span></div>
 
-			<div class="mt-2 text-caption tracking-subtitle text-dim">★ UENDELIG RUMFLUGT ★</div>
+			<div class="mt-2 text-caption tracking-subtitle text-dim">★ ENDLESS SPACE FLIGHT ★</div>
 
 			<div class="mt-2 inline-flex items-center gap-2.5 text-label text-dim">
 				<div id="connection-dot" class="h-2.5 w-2.5 bg-neon-red shadow-glow-red"></div>
@@ -46,27 +46,27 @@
 				<h2 class="mb-4.5 text-center text-xs tracking-heading text-neon-pink">- PILOT -</h2>
 
 				<div class="flex flex-col gap-2 py-2.5">
-					<span class="text-label tracking-label text-neon-cyan">POINT</span>
+					<span class="text-label tracking-label text-neon-cyan">SCORE</span>
 					<span id="hud-score" class="text-lg">000000</span>
 				</div>
 
 				<div class="flex flex-col gap-2 py-2.5">
-					<span class="text-label tracking-label text-neon-cyan">REKORD</span>
+					<span class="text-label tracking-label text-neon-cyan">BEST</span>
 					<span id="hud-best" class="text-lg text-neon-yellow">000000</span>
 				</div>
 
 				<div class="flex flex-col gap-2 py-2.5">
-					<span class="text-label tracking-label text-neon-cyan">SKJOLDE</span>
+					<span class="text-label tracking-label text-neon-cyan">SHIELDS</span>
 					<div id="hud-shields" class="flex gap-1.5"></div>
 				</div>
 
 				<div class="flex flex-col gap-2 py-2.5">
-					<span class="text-label tracking-label text-neon-cyan">FART <span id="hud-speed">1.0X</span></span>
+					<span class="text-label tracking-label text-neon-cyan">SPEED <span id="hud-speed">1.0X</span></span>
 					<div id="hud-speed-bar" class="flex gap-0.75"></div>
 				</div>
 
 				<div class="flex flex-col gap-2 pt-2.5">
-					<span class="text-label tracking-label text-neon-cyan">AFSTAND</span>
+					<span class="text-label tracking-label text-neon-cyan">DISTANCE</span>
 					<span id="hud-distance" class="text-lg">0.0KM</span>
 				</div>
 			</section>
@@ -83,31 +83,31 @@
 								<h1 class="text-3xl leading-tight text-neon-yellow text-shadow-title">M-SPACE</h1>
 
 								<ul class="flex flex-col gap-2.5 text-left text-label">
-									<li class="flex items-center gap-3.5"><img src="assets/asteroid.png" alt="" class="h-7 w-7 object-contain" />ASTEROIDE -1 SKJOLD</li>
-									<li class="flex items-center gap-3.5"><img src="assets/satellite.png" alt="" class="h-7 w-7 object-contain" />SATELLIT -1 SKJOLD</li>
-									<li class="flex items-center gap-3.5"><img src="assets/energy-cell.png" alt="" class="h-7 w-7 object-contain" />ENERGICELLE +1 SKJOLD</li>
-									<li class="flex items-center gap-3.5"><img src="assets/rocket.png" alt="" class="h-7 w-7 object-contain" />RAKET BOOST GENNEM ALT</li>
+									<li class="flex items-center gap-3.5"><img src="assets/asteroid.png" alt="" class="h-7 w-7 object-contain" />ASTEROID -1 SHIELD</li>
+									<li class="flex items-center gap-3.5"><img src="assets/satellite.png" alt="" class="h-7 w-7 object-contain" />SATELLITE -1 SHIELD</li>
+									<li class="flex items-center gap-3.5"><img src="assets/energy-cell.png" alt="" class="h-7 w-7 object-contain" />ENERGY CELL +1 SHIELD</li>
+									<li class="flex items-center gap-3.5"><img src="assets/rocket.png" alt="" class="h-7 w-7 object-contain" />ROCKET BOOST THROUGH ALL</li>
 								</ul>
 
 								<p class="flex items-center gap-3 text-label text-neon-cyan">
-									<span><span class="mr-1 inline-block border-3 border-light px-1.75 py-1 text-light" data-control="left">00</span> VENSTRE</span>
+									<span><span class="mr-1 inline-block border-3 border-light px-1.75 py-1 text-light" data-control="left">00</span> LEFT</span>
 									<span><span class="mr-1 inline-block border-3 border-light px-1.75 py-1 text-light" data-control="start">02</span> START</span>
-									<span><span class="mr-1 inline-block border-3 border-light px-1.75 py-1 text-light" data-control="right">04</span> HØJRE</span>
+									<span><span class="mr-1 inline-block border-3 border-light px-1.75 py-1 text-light" data-control="right">04</span> RIGHT</span>
 								</p>
 
-								<p class="animate-blink text-sm text-neon-yellow">TRYK START</p>
+								<p class="animate-blink text-sm text-neon-yellow">PRESS START</p>
 							</div>
 
 							<!-- Game over screen -->
 							<div id="game-over-screen" hidden class="absolute inset-0 z-2 flex flex-col items-center justify-center gap-5.5 bg-black/70 p-6 text-center">
-								<h1 class="text-3xl leading-tight text-neon-red text-shadow-game-over">SPIL<br />SLUT</h1>
+								<h1 class="text-3xl leading-tight text-neon-red text-shadow-game-over">GAME<br />OVER</h1>
 
 								<div id="final-score" class="text-3xl">000000</div>
 
-								<div id="new-record" hidden class="animate-blink text-body text-neon-green">★ NY REKORD ★</div>
+								<div id="new-record" hidden class="animate-blink text-body text-neon-green">★ NEW RECORD ★</div>
 
 								<form id="save-form" class="flex flex-col items-center gap-3 text-label text-neon-cyan">
-									<label for="player-name">SKRIV DIT NAVN (4 BOGSTAVER)</label>
+									<label for="player-name">ENTER YOUR NAME (4 LETTERS)</label>
 
 									<div class="flex gap-2.5">
 										<input
@@ -119,21 +119,21 @@
 										/>
 
 										<button type="submit" class="border-4 border-neon-cyan bg-black px-3.5 py-3 text-body text-light shadow-button hover:bg-neon-cyan hover:text-black active:translate-x-1 active:translate-y-1 active:shadow-none">
-											GEM
+											SAVE
 										</button>
 									</div>
 								</form>
 
-								<p class="animate-blink text-body leading-loose text-neon-yellow">TRYK START FOR AT PRØVE IGEN</p>
+								<p class="animate-blink text-body leading-loose text-neon-yellow">PRESS START TO TRY AGAIN</p>
 							</div>
 
 							<!-- Connection lost screen -->
 							<div id="connection-lost-screen" hidden class="absolute inset-0 z-2 flex flex-col items-center justify-center gap-5.5 bg-black/70 p-6 text-center">
-								<h1 class="text-3xl leading-tight text-neon-red text-shadow-game-over">FORBINDELSE<br />TABT</h1>
+								<h1 class="text-3xl leading-tight text-neon-red text-shadow-game-over">CONNECTION<br />LOST</h1>
 
-								<p class="text-label leading-loose text-dim">SPILLET ER SAT PÅ PAUSE</p>
+								<p class="text-label leading-loose text-dim">THE GAME IS PAUSED</p>
 
-								<p class="animate-blink text-body leading-loose text-neon-yellow">TRYK START FOR AT FORTSÆTTE</p>
+								<p class="animate-blink text-body leading-loose text-neon-yellow">PRESS START TO CONTINUE</p>
 							</div>
 
 							<div class="pointer-events-none absolute inset-0 z-10 animate-flicker bg-crt"></div>

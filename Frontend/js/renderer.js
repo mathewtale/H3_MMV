@@ -257,9 +257,9 @@ class Renderer {
 	static drawScreenHud(highscore) {
 		this.ctx.font = '14px "Press Start 2P"';
 
-		this.drawText("POINT", 16, 30, "#ff2fd6", "left");
+		this.drawText("SCORE", 16, 30, "#ff2fd6", "left");
 		this.drawText(Shared.formatScore(Game.score), 16, 54, "#f4f4ff", "left");
-		this.drawText("REKORD", this.width - 16, 30, "#ff2fd6", "right");
+		this.drawText("BEST", this.width - 16, 30, "#ff2fd6", "right");
 		this.drawText(Shared.formatScore(highscore), this.width - 16, 54, "#ffe600", "right");
 
 		for (let i = 0; i < Game.ship.shields; i++) Sprites.draw(this.ctx, "shield", 30 + i * 34, this.height - 30);

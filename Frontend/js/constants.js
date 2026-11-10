@@ -17,9 +17,9 @@ const boostColors = ["#ff8a00", "#ffe600", "#ff2a2a"];
 const pickupGlow = { energyCell: "rgba(57, 255, 20, 0.25)", rocket: "rgba(255, 138, 0, 0.3)" };
 
 const connectionText = {
-	connecting: "FORBINDER...",
+	connecting: "CONNECTING...",
 	online: "SERVER ONLINE",
-	lost: "FORBINDELSE TABT...",
+	lost: "CONNECTION LOST...",
 };
 const rankColors = ["text-neon-yellow", "text-light", "text-neon-orange"];
 const speedColors = ["bg-neon-green", "bg-neon-green", "bg-neon-green", "bg-neon-green", "bg-neon-yellow", "bg-neon-yellow", "bg-neon-yellow", "bg-neon-red", "bg-neon-red", "bg-neon-red"];

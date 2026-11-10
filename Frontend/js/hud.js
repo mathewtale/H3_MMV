@@ -130,7 +130,7 @@ class Hud {
 			const empty = document.createElement("p");
 
 			empty.className = "whitespace-pre-line text-center text-label leading-loose text-dim";
-			empty.textContent = "INGEN POINT\nENDNU\n\nBLIV DEN\nFØRSTE!";
+			empty.textContent = "NO SCORES YET\n\nBE THE FIRST!";
 
 			return container.replaceChildren(empty);
 		}
@@ -140,7 +140,7 @@ class Hud {
 
 		table.className = "w-full border-collapse text-body";
 
-		for (const title of ["NR", "NAVN", "POINT"]) {
+		for (const title of ["#", "NAME", "SCORE"]) {
 			const th = document.createElement("th");
 
 			th.className = "pb-3 text-left text-tiny font-normal text-neon-cyan last:text-right";
